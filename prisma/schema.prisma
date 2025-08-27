@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Organization {
+  id              String          @id @default(cuid())
+  name            String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  users           User[]
+  assets          Asset[]
+  departments     Department[]
+  assetCategories AssetCategory[]
+  assetLocations  AssetLocation[]
+}
+
+model User {
+  id              String      @id @default(cuid())
+  organizationId  String
+  name            String
+  email           String      @unique
+  password        String?
+  role            String      @default("Staff") // PlatformAdmin, Admin, Manager, Staff
+  status          String      @default("Active") // Active, Inactive
+  departmentName  String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  department      Department  @relation(fields: [departmentName, organizationId], references: [name, organizationId])
+}
+
+model Asset {
+  id              String        @id @default(cuid())
+  organizationId  String
+  assetTag        String        @unique
+  name            String
+  categoryName    String
+  locationName    String
+  status          String        @default("InStorage") // InUse, InStorage, UnderMaintenance, Retired
+  purchaseDate    DateTime
+  value           Float
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  organization    Organization  @relation(fields: [organizationId], references: [id])
+  category        AssetCategory @relation(fields: [categoryName, organizationId], references: [name, organizationId])
+  location        AssetLocation @relation(fields: [locationName, organizationId], references: [name, organizationId])
+}
+
+model Department {
+  id             String       @id @default(cuid())
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  users          User[]
+
+  @@unique([name, organizationId])
+}
+
+model AssetCategory {
+  id             String       @id @default(cuid())
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  assets         Asset[]
+
+  @@unique([name, organizationId])
+}
+
+model AssetLocation {
+  id             String       @id @default(cuid())
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  assets         Asset[]
+
+  @@unique([name, organizationId])
+}

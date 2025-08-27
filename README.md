@@ -1,5 +1,1 @@
-# Firebase Studio
-
-This is a NextJS starter in Firebase Studio.
-
-To get started, take a look at src/app/page.tsx.
+Kite Assets is a multi-tenant asset management app (Next.js + TypeScript, Prisma, Tailwind/shadcn). Track org-scoped assets with RBAC (Admin/Manager/Staff), catalogs (departments/categories/locations), analytics, QR codes, CSV/PDF reports, and a Platform Admin for multi-org oversight. Postgres-ready.
